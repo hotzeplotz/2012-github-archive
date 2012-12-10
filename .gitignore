@@ -45,3 +45,5 @@ spec/reports
 test/tmp
 test/version_tmp
 tmp
+devops/solo.json
+devops/cfengine
