@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+# CLI script to load data
+
+require 'pg'
+require 'yajl'
+require 'parallel'
+
+if(!File.exists?(ARGV[0]))
+  raise "Syntax: #{$0} config.json"
+end
+
+config = Yajl::Parser.parse(File.new(ARGV[0]))
+
+# This allows load-data to run easily from a git checkout without install.
+def fallback_load_path(path)
+  retried = false
+  begin
+    yield
+  rescue LoadError
+    unless retried
+      $: << path
+      retried = true
+      retry
+    end
+    raise
+  end
+end
+
+fallback_load_path(File.join(File.dirname(__FILE__), '..', 'lib')) do
+  require 'githubarchive'
+end
+
+db = PG::Connection.new({ :dbname => config['dbname']})
+
+GitHubArchive.create_table(db, config['table_name'], config['schema_file'])
+
+def test(year, month, day, hour)
+  File.open("/tmp/#{year}-#{month}-#{day}-#{hour}.json", 'w') { |f| f.write(GitHubArchive.download_chunk(year, month, day, hour)) }
+end
+
+config['data']['sets'].each do |year,months|
+  (months[0]..months[1]).each do |month|
+    (1..31).each do |day|
+      (0..23).each do |hour|
+        @data_chunk = GitHubArchive.download_chunk(year, month, day, hour)
+        GitHubArchive.load_data(db, config['table_name'], @data_chunk, year, month, day, hour)
+      end
+    end
+  end
+end  
