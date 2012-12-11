@@ -52,10 +52,10 @@ if (/\d{4}/.match(year) && /\d{1,2}/.match(month) && /\S+/.match(output_file))
    payload_commit_flag,
    url,
    type
-  FROM events
-  WHERE date_trunc('month', to_timestamp(created_at, 'YYYY-MM-DDTHH:MI:SS')) = '%04d-%02d-01 00:00:00'
+  FROM usable_events
+  WHERE created_at >= '%04d-%02d-01 00:00:00' AND created_at < '%04d-%02d-01 00:00:00'
   ORDER BY created_at)
-  TO '%s' DELIMITER ',' CSV HEADER;", year, month, output_file)
+  TO '%s' DELIMITER ',' CSV HEADER;", year, month, ((month.to_i == 12) && year.to_i + 1) || year, ((month.to_i == 12) && 1) || month.to_i + 1, output_file)
   puts statement
 else
   $stderr.puts "Syntax: #{$0} YYYY MM output_file"
