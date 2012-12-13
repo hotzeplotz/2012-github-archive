@@ -1,0 +1,8 @@
+{
+  "dbname": "gh2",
+  "table_name": "events2",
+  "schema_file": "../data/schema.js",
+  "data": {
+    "sets": { "2012": [ 1, 6 ] }
+  }
+}
