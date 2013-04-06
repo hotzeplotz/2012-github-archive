@@ -19,5 +19,6 @@ years.each do |year, months|
   months.each do |month|
     cmd = download_data(year, month)
     print cmd + "\n"
+		`bash -c '#{cmd}'`
   end
 end
