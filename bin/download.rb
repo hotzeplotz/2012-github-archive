@@ -2,7 +2,8 @@
 # at some point in February 2011
 years = {
  2011 => (2..12),
- 2012 => (1..12)
+ 2012 => (1..12),
+ 2013 => (1..3)
 }
 
 # given year and month, download all data for the month;
